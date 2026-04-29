@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vuln-scanner</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="layout">
+  <div class="app">
+    <div class="header">
+      <div class="logo">
+        <svg viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="7" stroke="#0a0a0f" stroke-width="2"/>
+          <path d="M10 6v4l2.5 2.5" stroke="#0a0a0f" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1>vuln-scanner</h1>
+      <span>v1.0</span>
+    </div>
+
+    <div class="scan-box">
+      <div class="scan-label">Target URL</div>
+      <div class="input-row">
+        <input class="url-input" id="urlInput" type="text" placeholder="https://example.com" />
+        <button class="btn-scan" id="scanBtn" onclick="runScan()">▶ Scan</button>
+      </div>
+      <div class="quick-label">QUICK TARGETS</div>
+      <div class="quick-urls">
+        <button class="quick-btn" onclick="setUrl('https://example.com')">example.com</button>
+        <button class="quick-btn" onclick="setUrl('https://google.com')">google.com</button>
+        <button class="quick-btn" onclick="setUrl('https://github.com')">github.com</button>
+        <button class="quick-btn" onclick="setUrl('https://mozilla.org')">mozilla.org</button>
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <button class="btn-secondary" onclick="listResults()">
+        <span class="dot green"></span> GET /api/results
+      </button>
+      <button class="btn-secondary" onclick="promptId()">
+        <span class="dot amber"></span> GET /api/results/{id}
+      </button>
+    </div>
+
+    <div class="results-area">
+      <div class="results-header">
+        <span class="results-title">OUTPUT</span>
+        <span class="status-pill ready" id="statusPill">READY</span>
+      </div>
+      <div class="results-body" id="resultsBody">
+        <div class="placeholder">
+          ██ syötä URL ja paina Scan<br>
+          ██ tai valitse quick target<br>
+          ██ API running at localhost:8000
+        </div>
+      </div>
+      <div class="score-bar" id="scoreBar" style="display:none">
+        <span class="score-label">SCORE</span>
+        <div class="bar-track"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+        <span class="score-num" id="scoreNum">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">SELITYS</span>
+      <span class="sidebar-badge">klikkaa löydöstä</span>
+    </div>
+    <div class="sidebar-body" id="sidebarBody">
+      <div class="sidebar-empty">
+        ██ klikkaa<br>
+        ██ jotain löydöstä<br>
+        ██ nähdäksesi selityksen
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

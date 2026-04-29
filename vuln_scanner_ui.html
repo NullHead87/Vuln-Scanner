@@ -1,0 +1,494 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;800&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .app {
+    font-family: 'Syne', sans-serif;
+    background: #0a0a0f;
+    color: #e2e2e8;
+    min-height: 600px;
+    padding: 28px 24px;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .logo {
+    width: 36px; height: 36px;
+    background: #00ff88;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .logo svg { width: 20px; height: 20px; }
+
+  .header h1 {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+
+  .header span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #00ff88;
+    background: rgba(0,255,136,0.1);
+    border: 1px solid rgba(0,255,136,0.25);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+
+  .scan-box {
+    background: #13131a;
+    border: 1px solid #1e1e2e;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .scan-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #555570;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .url-input {
+    flex: 1;
+    background: #0a0a0f;
+    border: 1px solid #1e1e2e;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #e2e2e8;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .url-input:focus { border-color: #00ff88; }
+  .url-input::placeholder { color: #33334a; }
+
+  .btn-scan {
+    background: #00ff88;
+    color: #0a0a0f;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .btn-scan:hover { opacity: 0.85; }
+  .btn-scan:active { transform: scale(0.97); }
+  .btn-scan:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .quick-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: #555570;
+    letter-spacing: 1px;
+    margin-top: 14px;
+    margin-bottom: 8px;
+  }
+
+  .quick-urls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .quick-btn {
+    background: transparent;
+    border: 1px solid #1e1e2e;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #6666aa;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .quick-btn:hover {
+    border-color: #00ff88;
+    color: #00ff88;
+    background: rgba(0,255,136,0.05);
+  }
+
+  .actions-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .btn-secondary {
+    background: #13131a;
+    border: 1px solid #1e1e2e;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8888aa;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-secondary:hover {
+    border-color: #4444aa;
+    color: #aaaacc;
+  }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .dot.green { background: #00ff88; }
+  .dot.amber { background: #ffaa00; }
+
+  .results-area {
+    background: #13131a;
+    border: 1px solid #1e1e2e;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .results-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid #1e1e2e;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .results-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #555570;
+    letter-spacing: 1px;
+  }
+
+  .status-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+
+  .status-pill.ready { color: #555570; border-color: #1e1e2e; }
+  .status-pill.scanning { color: #ffaa00; border-color: rgba(255,170,0,0.3); background: rgba(255,170,0,0.07); }
+  .status-pill.done { color: #00ff88; border-color: rgba(0,255,136,0.3); background: rgba(0,255,136,0.07); }
+  .status-pill.error { color: #ff4466; border-color: rgba(255,68,102,0.3); background: rgba(255,68,102,0.07); }
+
+  .results-body {
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    min-height: 180px;
+  }
+
+  .placeholder {
+    color: #33334a;
+    text-align: center;
+    padding: 40px 0;
+    font-size: 12px;
+    line-height: 2;
+  }
+
+  .section { margin-bottom: 16px; }
+
+  .section-title {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: #555570;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .finding {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid #0e0e18;
+    font-size: 11px;
+  }
+
+  .finding:last-child { border-bottom: none; }
+
+  .badge {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .badge.ok { background: rgba(0,255,136,0.12); color: #00ff88; }
+  .badge.missing { background: rgba(255,68,102,0.12); color: #ff4466; }
+  .badge.warning { background: rgba(255,170,0,0.12); color: #ffaa00; }
+  .badge.info { background: rgba(100,100,200,0.12); color: #8888cc; }
+  .badge.error { background: rgba(255,68,102,0.15); color: #ff4466; }
+
+  .finding-text { color: #8888aa; line-height: 1.5; }
+  .finding-val { color: #aaaacc; }
+
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-top: 1px solid #1e1e2e;
+    background: #0f0f18;
+  }
+
+  .score-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #555570; }
+
+  .bar-track {
+    flex: 1;
+    height: 4px;
+    background: #1e1e2e;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+    background: #00ff88;
+  }
+
+  .bar-fill.mid { background: #ffaa00; }
+  .bar-fill.low { background: #ff4466; }
+
+  .score-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: #00ff88;
+    min-width: 36px;
+    text-align: right;
+  }
+
+  .spinning { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<div class="app">
+  <div class="header">
+    <div class="logo">
+      <svg viewBox="0 0 20 20" fill="none">
+        <circle cx="10" cy="10" r="7" stroke="#0a0a0f" stroke-width="2"/>
+        <path d="M10 6v4l2.5 2.5" stroke="#0a0a0f" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>vuln-scanner</h1>
+    <span>v1.0</span>
+  </div>
+
+  <div class="scan-box">
+    <div class="scan-label">Target URL</div>
+    <div class="input-row">
+      <input class="url-input" id="urlInput" type="text" placeholder="https://example.com" />
+      <button class="btn-scan" id="scanBtn" onclick="runScan()">▶ Scan</button>
+    </div>
+    <div class="quick-label">QUICK TARGETS</div>
+    <div class="quick-urls">
+      <button class="quick-btn" onclick="setUrl('https://example.com')">example.com</button>
+      <button class="quick-btn" onclick="setUrl('https://google.com')">google.com</button>
+      <button class="quick-btn" onclick="setUrl('https://github.com')">github.com</button>
+      <button class="quick-btn" onclick="setUrl('https://mozilla.org')">mozilla.org</button>
+    </div>
+  </div>
+
+  <div class="actions-row">
+    <button class="btn-secondary" onclick="listResults()">
+      <span class="dot green"></span> GET /api/results
+    </button>
+    <button class="btn-secondary" onclick="promptId()">
+      <span class="dot amber"></span> GET /api/results/{id}
+    </button>
+  </div>
+
+  <div class="results-area">
+    <div class="results-header">
+      <span class="results-title">OUTPUT</span>
+      <span class="status-pill ready" id="statusPill">READY</span>
+    </div>
+    <div class="results-body" id="resultsBody">
+      <div class="placeholder">
+        ██ syötä URL ja paina Scan<br>
+        ██ tai valitse quick target<br>
+        ██ API running at localhost:8000
+      </div>
+    </div>
+    <div class="score-bar" id="scoreBar" style="display:none">
+      <span class="score-label">SCORE</span>
+      <div class="bar-track"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+      <span class="score-num" id="scoreNum">—</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8000';
+
+function setUrl(url) {
+  document.getElementById('urlInput').value = url;
+  document.getElementById('urlInput').focus();
+}
+
+function setStatus(s) {
+  const p = document.getElementById('statusPill');
+  p.className = 'status-pill ' + s;
+  p.textContent = s.toUpperCase();
+}
+
+function setScore(score, max) {
+  const bar = document.getElementById('scoreBar');
+  const fill = document.getElementById('barFill');
+  const num = document.getElementById('scoreNum');
+  bar.style.display = 'flex';
+  const pct = max ? Math.round((score/max)*100) : 0;
+  fill.style.width = pct + '%';
+  fill.className = 'bar-fill' + (pct >= 70 ? '' : pct >= 40 ? ' mid' : ' low');
+  num.textContent = score + '/' + max;
+  num.style.color = pct >= 70 ? '#00ff88' : pct >= 40 ? '#ffaa00' : '#ff4466';
+}
+
+function renderFindings(data) {
+  const body = document.getElementById('resultsBody');
+  let html = '';
+
+  if (data.results) {
+    const r = data.results;
+    html += `<div class="section"><div class="section-title">HTTP Headers</div>`;
+    (r.headers?.findings || []).forEach(f => {
+      html += `<div class="finding"><span class="badge ${f.status}">${f.status}</span><span class="finding-text">${f.header}${f.value ? ` <span class="finding-val">— ${f.value.substring(0,60)}${f.value.length>60?'…':''}</span>` : ''}</span></div>`;
+    });
+    html += `</div>`;
+
+    html += `<div class="section"><div class="section-title">TLS / SSL</div>`;
+    (r.tls?.findings || []).forEach(f => {
+      html += `<div class="finding"><span class="badge ${f.status}">${f.status}</span><span class="finding-text">${f.check} <span class="finding-val">— ${f.detail}</span></span></div>`;
+    });
+    html += `</div>`;
+
+    html += `<div class="section"><div class="section-title">Redirects</div>`;
+    (r.redirects?.findings || []).forEach(f => {
+      html += `<div class="finding"><span class="badge ${f.status}">${f.status}</span><span class="finding-text">${f.check} <span class="finding-val">— ${f.detail}</span></span></div>`;
+    });
+    html += `</div>`;
+
+    html += `<div class="section"><div class="section-title">Info</div>`;
+    (r.info?.findings || []).forEach(f => {
+      html += `<div class="finding"><span class="badge info">info</span><span class="finding-text">${f.check} <span class="finding-val">— ${f.detail}</span></span></div>`;
+    });
+    html += `</div>`;
+
+    setScore(data.overall_score, data.max_score);
+  } else if (Array.isArray(data)) {
+    html += `<div class="section"><div class="section-title">Tallennetut skannaukset</div>`;
+    if (data.length === 0) {
+      html += `<div class="finding"><span class="finding-text" style="color:#555570">Ei tuloksia vielä.</span></div>`;
+    }
+    data.forEach(s => {
+      html += `<div class="finding"><span class="badge ${s.overall_score > 5 ? 'ok' : 'warning'}">#${s.id}</span><span class="finding-text">${s.url} <span class="finding-val">— score ${s.overall_score} · ${new Date(s.created_at).toLocaleString('fi-FI')}</span></span></div>`;
+    });
+    html += `</div>`;
+    document.getElementById('scoreBar').style.display = 'none';
+  } else {
+    html = `<pre style="color:#8888aa;font-size:11px;white-space:pre-wrap">${JSON.stringify(data, null, 2)}</pre>`;
+  }
+
+  body.innerHTML = html;
+}
+
+async function runScan() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) return;
+  const btn = document.getElementById('scanBtn');
+  btn.disabled = true;
+  btn.textContent = '⟳ Scanning';
+  setStatus('scanning');
+  document.getElementById('resultsBody').innerHTML = `<div class="placeholder"><span class="spinning">◌</span> Skannataan ${url}…</div>`;
+  document.getElementById('scoreBar').style.display = 'none';
+
+  try {
+    const res = await fetch(`${API}/api/scan`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Virhe');
+    setStatus('done');
+    renderFindings(data);
+  } catch (e) {
+    setStatus('error');
+    document.getElementById('resultsBody').innerHTML = `<div class="finding"><span class="badge error">error</span><span class="finding-text">${e.message}</span></div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '▶ Scan';
+  }
+}
+
+async function listResults() {
+  setStatus('scanning');
+  document.getElementById('resultsBody').innerHTML = `<div class="placeholder"><span class="spinning">◌</span> Haetaan tuloksia…</div>`;
+  try {
+    const res = await fetch(`${API}/api/results`);
+    const data = await res.json();
+    setStatus('done');
+    renderFindings(data);
+  } catch (e) {
+    setStatus('error');
+    document.getElementById('resultsBody').innerHTML = `<div class="finding"><span class="badge error">error</span><span class="finding-text">${e.message}</span></div>`;
+  }
+}
+
+async function promptId() {
+  const id = prompt('Syötä scan ID:');
+  if (!id) return;
+  setStatus('scanning');
+  document.getElementById('resultsBody').innerHTML = `<div class="placeholder"><span class="spinning">◌</span> Haetaan #${id}…</div>`;
+  try {
+    const res = await fetch(`${API}/api/results/${id}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Ei löydy');
+    setStatus('done');
+    renderFindings(data);
+  } catch (e) {
+    setStatus('error');
+    document.getElementById('resultsBody').innerHTML = `<div class="finding"><span class="badge error">error</span><span class="finding-text">${e.message}</span></div>`;
+  }
+}
+
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runScan();
+});
+</script>
