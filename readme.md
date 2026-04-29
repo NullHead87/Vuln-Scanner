@@ -129,20 +129,20 @@ Invoke-WebRequest -Uri "http://localhost:8000/api/scan" `
 ## Projektirakenne
   
 vuln_scanner/
-├── main.py              # FastAPI-sovellus, reitit ja käynnistys
-├── database.py          # Tietokantayhteys ja alustus
-├── models.py            # SQLAlchemy-tietokantamallit
-├── scanner/
-│   ├── headers.py       # HTTP security header -tarkistukset
-│   ├── tls.py           # TLS/SSL-tarkistukset
-│   └── redirects.py     # Uudelleenohjauksen tarkistukset
-├── routers/
-│   └── scan.py          # API-endpointit
+├── main.py              # FastAPI-sovellus, reitit ja käynnistys  
+├── database.py          # Tietokantayhteys ja alustus  
+├── models.py            # SQLAlchemy-tietokantamallit  
+├── scanner/  
+│   ├── headers.py       # HTTP security header -tarkistukset  
+│   ├── tls.py           # TLS/SSL-tarkistukset  
+│   └── redirects.py     # Uudelleenohjauksen tarkistukset  
+├── routers/  
+│   └── scan.py          # API-endpointit  
 ├── static/
-│   ├── style.css        # Käyttöliittymän tyylitiedosto
-│   └── app.js           # Käyttöliittymän logiikka
-├── frontend.html        # Selainliittymä
-└── README.md            # Tämä tiedosto
+│   ├── style.css        # Käyttöliittymän tyylitiedosto  
+│   └── app.js           # Käyttöliittymän logiikka  
+├── frontend.html        # Selainliittymä  
+└── README.md            # Tämä tiedosto  
 
 ---
 
