@@ -1,8 +1,6 @@
 # Vuln-Scanner
 
-A server-side REST API built with Python and FastAPI that performs automated security scanning on web targets. Identifies common misconfigurations, exposed headers, TLS issues, DNS records, open ports, subdomains, and known CVE vulnerabilities.
-
-Built as a backend course project at JAMK University of Applied Sciences.
+A server-side REST API built with Python and FastAPI that performs automated security scanning on web targets. Identifies common misconfigurations, exposed headers, TLS issues, DNS records, open ports, subdomains, and known CVE vulnerabilities.  
 
 ---
 
