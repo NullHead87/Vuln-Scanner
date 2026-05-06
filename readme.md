@@ -1,33 +1,51 @@
 # Vuln-Scanner
 
-HTTP-tietoturvaskanneri joka tarkistaa web-sivustojen yleisimmät tietoturvapuutteet.
-Rakennettu Python/FastAPI-backendillä ja SQLite-tietokannalla.
+A server-side REST API built with Python and FastAPI that performs automated security scanning on web targets. Identifies common misconfigurations, exposed headers, TLS issues, DNS records, open ports, subdomains, and known CVE vulnerabilities.
+
+Built as a backend course project at JAMK University of Applied Sciences.
 
 ---
 
-## Vaatimukset
+## Features
+
+- HTTP security header analysis
+- TLS/SSL certificate inspection
+- Redirect and open redirect detection
+- DNS record checks (SPF, DMARC, DKIM)
+- HTTP method testing (PUT, DELETE, TRACE, PATCH, OPTIONS)
+- Cookie flag validation (Secure, HttpOnly, SameSite)
+- Port scanning for common services
+- Subdomain enumeration
+- CVE lookup via NVD API based on detected server software
+- PDF report generation
+- SQLite result storage with full history
+- Interactive browser UI with explanation sidebar
+
+---
+
+## Requirements
 
 - Python 3.10+
 - pip
 
 ---
 
-## Asennus
+## Installation
 
-### 1. Kloonaa tai lataa projekti
+### 1. Clone or download the project
 
 ```bash
 git clone <repository-url>
 cd vuln_scanner
 ```
 
-### 2. Luo virtuaaliympäristö
+### 2. Create virtual environment
 
 ```bash
 python -m venv venv
 ```
 
-### 3. Aktivoi virtuaaliympäristö
+### 3. Activate virtual environment
 
 **Windows:**
 ```bash
@@ -39,56 +57,52 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 4. Asenna riippuvuudet
+### 4. Install dependencies
 
 ```bash
-pip install fastapi uvicorn httpx sqlalchemy aiosqlite aiofiles
+pip install fastapi uvicorn httpx sqlalchemy aiosqlite aiofiles dnspython reportlab
 ```
 
 ---
 
-## Käynnistys
+## Usage
+
+### Start the server
 
 ```bash
 uvicorn main:app --reload
 ```
 
-Sovellus käynnistyy osoitteeseen `http://localhost:8000`
+Server starts at `http://localhost:8000`
+
+### Browser UI
+
+Open `http://localhost:8000` in your browser.
+
+1. Enter a target URL, e.g. `https://example.com`
+2. Click **Scan** or press Enter
+3. Results appear below — click any finding to see an explanation in the sidebar
+4. Score bar shows overall security rating (green / yellow / red)
+5. Click **↓ PDF** to download a full report
+
+### API Documentation (Swagger UI)
+
+```
+http://localhost:8000/docs
+```
 
 ---
 
-## Käyttö
+## API Endpoints
 
-### Selainliittymä
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/scan` | Run a new scan |
+| GET | `/api/results` | List all saved scans |
+| GET | `/api/results/{id}` | Get scan by ID |
+| GET | `/api/results/{id}/pdf` | Download scan report as PDF |
 
-Avaa selaimessa: `http://localhost:8000`  
-  
-1. Kirjoita kohde-URL kenttään, esim. `https://google.com`
-2. Paina **Scan** tai Enter
-3. Tulokset näkyvät ruudulla — klikkaa mitä tahansa löydöstä nähdäksesi selityksen oikealla
-4. Score-palkki näyttää kokonaisarvion (vihreä / keltainen / punainen)
-
-**Quick targets** — valmiit napit täyttävät URL-kentän automaattisesti testikohteilla.
-
----
-
-### API-dokumentaatio (Swagger UI)  
-  
-`http://localhost:8000/docs`  
-  
-Swagger UI:ssa voit testata kaikkia endpointteja suoraan selaimella.
-
----
-
-## API-endpointit
-
-| Metodi | Endpoint | Kuvaus |
-|--------|----------|--------|
-| POST | `/api/scan` | Käynnistää uuden skannauksen |
-| GET | `/api/results` | Listaa kaikki tallennetut skannaukset |
-| GET | `/api/results/{id}` | Hakee yksittäisen skannauksen ID:llä |
-
-### Esimerkki: skannaus PowerShellissä
+### Example request (PowerShell)
 
 ```powershell
 Invoke-WebRequest -Uri "http://localhost:8000/api/scan" `
@@ -99,67 +113,106 @@ Invoke-WebRequest -Uri "http://localhost:8000/api/scan" `
 
 ---
 
-## Mitä skanneri tarkistaa
+## Checks Performed
 
 ### HTTP Security Headers
-| Header | Kuvaus |
-|--------|--------|
-| Strict-Transport-Security | Pakottaa HTTPS-yhteyden |
-| Content-Security-Policy | Estää XSS-hyökkäyksiä |
-| X-Frame-Options | Estää clickjacking-hyökkäyksiä |
-| X-Content-Type-Options | Estää MIME-tyypin arvailun |
-| Referrer-Policy | Rajoittaa referrer-tiedon jakamista |
-| Permissions-Policy | Hallitsee selaimen ominaisuuksien käyttöä |
+
+| Header | Description |
+|--------|-------------|
+| Strict-Transport-Security | Enforces HTTPS connections |
+| Content-Security-Policy | Prevents XSS attacks |
+| X-Frame-Options | Prevents clickjacking |
+| X-Content-Type-Options | Prevents MIME sniffing |
+| Referrer-Policy | Controls referrer information |
+| Permissions-Policy | Controls browser feature access |
 
 ### TLS / SSL
-- TLS-versio (suositeltu: TLSv1.2 tai TLSv1.3)
-- Sertifikaatin voimassaoloaika
-- Sertifikaatin Common Name (CN)
+- TLS version (recommended: TLSv1.2 or TLSv1.3)
+- Certificate expiry
+- Certificate Common Name (CN)
 
-### Uudelleenohjaukset
-- Open redirect -tarkistus
-- HTTP → HTTPS uudelleenohjaus
+### DNS
+- SPF record
+- DMARC record
+- DKIM record (default selector)
 
-### Info
-- robots.txt sijainti
-- Sitemap sijainti
+### HTTP Methods
+- Tests PUT, DELETE, TRACE, PATCH, OPTIONS
+- Flags methods that return 2xx responses
+
+### Cookies
+- Secure flag
+- HttpOnly flag
+- SameSite flag
+
+### Port Scan
+
+| Port | Service |
+|------|---------|
+| 21 | FTP |
+| 22 | SSH |
+| 23 | Telnet |
+| 25 | SMTP |
+| 80 | HTTP |
+| 443 | HTTPS |
+| 3306 | MySQL |
+| 5432 | PostgreSQL |
+| 6379 | Redis |
+| 8080 | HTTP-alt |
+| 8443 | HTTPS-alt |
+| 27017 | MongoDB |
+
+### Subdomain Enumeration
+Tests common subdomains: `www`, `mail`, `ftp`, `admin`, `dev`, `staging`, `api`, `test`, `portal`, `vpn`, `remote`, `shop`, `blog`, `app`, `beta`, `secure`, `login`, `cpanel`
+
+### CVE Lookup
+Automatically queries the NVD API for known vulnerabilities based on detected server software (Apache, nginx, IIS, Drupal, etc.)
 
 ---
 
-## Projektirakenne
-  
+## Project Structure
+
 ```
 vuln_scanner/
-├── main.py              # FastAPI-sovellus, reitit ja käynnistys
-├── database.py          # Tietokantayhteys ja alustus
-├── models.py            # SQLAlchemy-tietokantamallit
+├── main.py              # FastAPI app, startup and routing
+├── database.py          # Database connection and initialization
+├── models.py            # SQLAlchemy models
 ├── scanner/
-│   ├── headers.py       # HTTP security header -tarkistukset
-│   ├── tls.py           # TLS/SSL-tarkistukset
-│   ├── redirects.py     # Uudelleenohjauksen tarkistukset
-│   ├── dns_check.py     # DNS-tarkistukset
-│   ├── methods.py       # HTTP-metoditarkistukset
-│   ├── cookies.py       # Evästetarkistukset
-│   ├── ports.py         # Porttiskannaus
-│   └── subdomains.py    # Subdomain-löytäminen
+│   ├── headers.py       # HTTP security header checks
+│   ├── tls.py           # TLS/SSL checks
+│   ├── redirects.py     # Redirect checks
+│   ├── dns_check.py     # DNS record checks
+│   ├── methods.py       # HTTP method checks
+│   ├── cookies.py       # Cookie flag checks
+│   ├── ports.py         # Port scanning
+│   ├── subdomains.py    # Subdomain enumeration
+│   └── cve_check.py     # CVE lookup via NVD API
 ├── routers/
-│   └── scan.py          # API-endpointit
+│   └── scan.py          # API endpoints and PDF generation
 ├── static/
-│   ├── style.css        # Käyttöliittymän tyylitiedosto
-│   └── app.js           # Käyttöliittymän logiikka
-├── frontend.html        # Selainliittymä
-└── README.md            
-```        
+│   ├── style.css        # Frontend styles
+│   └── app.js           # Frontend logic
+├── frontend.html        # Browser UI
+└── README.md            # This file
+```
 
 ---
 
-## Tietokanta
+## Database
 
-Skannaukset tallennetaan automaattisesti SQLite-tietokantaan (`scanner.db`).
-Tietokanta luodaan automaattisesti ensimmäisellä käynnistyskerralla.
+Scan results are stored automatically in a local SQLite database (`scanner.db`). The database is created automatically on first startup. The file is excluded from version control via `.gitignore`.
 
 ---
 
-## Tekijä  
-  
-@NullHead87
+## Notes
+
+- CVE lookups use the public NVD API (5 requests/second limit without API key)
+- Port scanning may be slow on targets with strict firewalls
+- Subdomain enumeration only tests a predefined list of common names
+- Scanner is intended for authorized testing only
+
+---
+
+## Author
+
+NullHead87
