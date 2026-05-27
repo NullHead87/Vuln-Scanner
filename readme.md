@@ -204,6 +204,8 @@ Scan results are stored automatically in a local SQLite database (`scanner.db`).
 
 ## Notes
 
+-Some of features are still under construction and may not work!
+
 - CVE lookups use the public NVD API (5 requests/second limit without API key)
 - Port scanning may be slow on targets with strict firewalls
 - Subdomain enumeration only tests a predefined list of common names
