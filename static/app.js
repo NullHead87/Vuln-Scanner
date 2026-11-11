@@ -249,7 +249,6 @@ function renderFindings(data) {
       { title: 'DNS',               findings: r.dns?.findings,        keyField: 'check',   valField: 'detail' },
       { title: 'HTTP-metodit',      findings: r.methods?.findings,    keyField: 'check',   valField: 'detail' },
       { title: 'Evästeet',          findings: r.cookies?.findings,    keyField: 'check',   valField: 'detail' },
-      { title: 'Portit',            findings: r.ports?.findings,      keyField: 'check',   valField: 'detail' },
       { title: 'Subdomainit',       findings: r.subdomains?.findings, keyField: 'check',   valField: 'detail' },
       { title: 'Info',              findings: r.info?.findings,       keyField: 'check',   valField: 'detail' },
     ];
