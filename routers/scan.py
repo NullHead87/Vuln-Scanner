@@ -14,7 +14,6 @@ from scanner.redirects import check_redirects
 from scanner.dns_check import check_dns
 from scanner.methods import check_methods
 from scanner.cookies import check_cookies
-from scanner.ports import check_ports
 from scanner.subdomains import check_subdomains
 
 router = APIRouter(prefix="/api", tags=["scanner"])
@@ -34,7 +33,6 @@ async def run_scan(request: ScanRequest, db: AsyncSession = Depends(get_db)):
     dns_result = await check_dns(url)
     methods_result = await check_methods(url)
     cookies_result = await check_cookies(url)
-    ports_result = await check_ports(url)
     subdomains_result = await check_subdomains(url)
 
     info_findings = []
@@ -79,7 +77,6 @@ async def run_scan(request: ScanRequest, db: AsyncSession = Depends(get_db)):
         dns_detail=json.dumps(dns_result["findings"]),
         methods_detail=json.dumps(methods_result["findings"]),
         cookies_detail=json.dumps(cookies_result["findings"]),
-        ports_detail=json.dumps(ports_result["findings"]),
         subdomains_detail=json.dumps(subdomains_result["findings"]),
         info_detail=json.dumps(info_findings),
     )
@@ -100,7 +97,6 @@ async def run_scan(request: ScanRequest, db: AsyncSession = Depends(get_db)):
             "dns": dns_result,
             "methods": methods_result,
             "cookies": cookies_result,
-            "ports": ports_result,
             "subdomains": subdomains_result,
             "info": {"findings": info_findings},
         }
@@ -147,7 +143,6 @@ async def get_result(scan_id: int, db: AsyncSession = Depends(get_db)):
             "dns": {"score": scan.dns_score, "findings": json.loads(scan.dns_detail or "[]")},
             "methods": {"findings": json.loads(scan.methods_detail or "[]")},
             "cookies": {"score": scan.cookies_score, "findings": json.loads(scan.cookies_detail or "[]")},
-            "ports": {"findings": json.loads(scan.ports_detail or "[]")},
             "subdomains": {"findings": json.loads(scan.subdomains_detail or "[]")},
             "info": {"findings": json.loads(scan.info_detail or "[]")},
         }
@@ -300,7 +295,6 @@ def generate_pdf(scan: ScanResult) -> bytes:
         ("DNS-tarkistukset", json.loads(scan.dns_detail or "[]")),
         ("HTTP-metodit", json.loads(scan.methods_detail or "[]")),
         ("Evästeet", json.loads(scan.cookies_detail or "[]")),
-        ("Portit", json.loads(scan.ports_detail or "[]")),
         ("Subdomainit", json.loads(scan.subdomains_detail or "[]")),
         ("Info", json.loads(scan.info_detail or "[]")),
     ]
